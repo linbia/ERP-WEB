@@ -20,7 +20,7 @@ export default {
     handleClick(tab, event) {
       let parm = {
         pageNum:1,
-        pageSize:1,
+        pageSize:10,
         paging:true,
       }
       warehouses(parm).then()

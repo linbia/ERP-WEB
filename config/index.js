@@ -12,7 +12,8 @@ module.exports = {
     assetsPublicPath: '/',
     proxyTable: {
       '/api': {
-        target: 'http://suyjmanage.free.vipnps.vip/',
+        //target: 'http://suyjmanage.free.vipnps.vip/',
+        target: 'http://127.0.0.1:10000/',
         changeOrigin: true,
         pathRewrite: {
           '^/api': ''
