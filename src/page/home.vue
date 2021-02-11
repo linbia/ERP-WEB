@@ -11,7 +11,7 @@
                 <el-breadcrumb-item v-for="item in $route.matched" :key="item.path">{{ item.name }}</el-breadcrumb-item>
               </el-breadcrumb>
             </el-col>
-            <el-col :span="4" class="userinfo">
+            <el-col :span="1" class="userinfo">
                 <el-dropdown trigger="hover">
                     <span class="el-dropdown-link userinfo-inner">{{sysUserName}}</span>
                     <el-dropdown-menu slot="dropdown">
@@ -20,6 +20,26 @@
                         <el-dropdown-item divided @click.native="logoutFun">退出登录</el-dropdown-item>
                     </el-dropdown-menu>
                 </el-dropdown>
+            </el-col>
+            <el-col :span="3" class="company">
+              <el-select size="mini" v-model="value" placeholder="请选择分区">
+                <el-option
+                  v-for="item in options"
+                  :key="item.value"
+                  :label="item.label"
+                  :value="item.value"
+                ></el-option>
+              </el-select>
+            </el-col>
+            <el-col :span="3" class="company">
+              <el-select size="mini" v-model="value" placeholder="请选择分区">
+                <el-option
+                  v-for="item in options"
+                  :key="item.value"
+                  :label="item.label"
+                  :value="item.value"
+                ></el-option>
+              </el-select>
             </el-col>
         </el-col>
     <el-col :span="24" class="main">
@@ -38,13 +58,15 @@
        </el-menu>
      </aside>
      <section class="content-container">
-       <div class="grid-content bg-purple-light">
+       <div class="grid-content bg-purple-light" >
          <el-row class="nav-tabs">
           <el-col :span="24">
-            <div @click="changeRouter(index)" v-for="(option, index) in arry" class="cus-tab-box" :class="activepath==option.path?'activeTab':''">
-              <span>{{option.name}}</span>
-              <span @click.stop="arry.length!=1 && removeTab(index)"><i class="fa fa-times close-icon" aria-hidden="true"></i></span>
-            </div>
+            <el-tag  v-for="(option, index) in arry" class="cus-tab-box" :class="activepath==option.path?'activeTab':''" :key="option.path">
+              <div @click="changeRouter(index)">
+                <span>{{option.name}}</span>
+                <span @click.stop="arry.length!=1 && removeTab(index)"><i class="fa fa-times close-icon" aria-hidden="true"></i></span>
+              </div>
+            </el-tag>
           </el-col>
          </el-row>
          <el-col :span="24" class="content-wrapper">
@@ -67,6 +89,29 @@ export default {
   components: {},
   data() {
     return {
+      options: [
+        {
+          value: "选项1",
+          label: "黄金糕"
+        },
+        {
+          value: "选项2",
+          label: "双皮奶"
+        },
+        {
+          value: "选项3",
+          label: "蚵仔煎"
+        },
+        {
+          value: "选项4",
+          label: "龙须面"
+        },
+        {
+          value: "选项5",
+          label: "北京烤鸭"
+        }
+      ],
+      value: "",
       sysName: "管理系统",
       sysUserName: "",
       activepath: "",
@@ -183,10 +228,15 @@ export default {
     line-height: 50px;
     background: $globalColor;
     color: #fff;
-    .userinfo {
+
+    .company{
       text-align: right;
-      padding-right: 35px;
       float: right;
+    }
+    .userinfo {
+      float: right;
+      text-align: right;
+      padding-right: 20px;
       .userinfo-inner {
         cursor: pointer;
         color: #fff;
@@ -277,6 +327,9 @@ export default {
       flex: 1;
       overflow-y: scroll;
       padding: 20px;
+      .grid-content{
+        height: 100%;
+      }
       .nav-tabs {
         font-size: 12px;
         border-bottom: 1px solid #e4e7ed;
@@ -302,6 +355,7 @@ export default {
         }
       }
       .content-wrapper {
+        height: calc(100% - 43px);
         background-color: #fff;
         box-sizing: border-box;
       }

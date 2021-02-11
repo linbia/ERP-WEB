@@ -7,6 +7,7 @@ import login from '../page/login.vue'
 import home from '../page/home.vue'
 import notFound from '../page/404.vue'
 import warehouseList from '../page/warehouse/index.vue'
+import wareOrder from '../page/warehouse/component/wareOrder'
 import sub11 from '../page/menu1/sub1.vue'
 import sub12 from '../page/menu1/sub2.vue'
 import sub21 from '../page/menu2/sub1.vue'
@@ -34,13 +35,18 @@ let routes = [
   {
     path: '/warehouse',
     component: home,
-    name: '仓库',
+    name: '仓库管理',
     iconCls: 'el-icon-message', //图标样式class
     children: [
       {
         path: 'warehouseList',
         component: warehouseList,
-        name: '仓库'
+        name: '仓库管理'
+      },
+      {
+        path: 'wareOrder',
+        component: wareOrder,
+        name: '订单管理'
       }
     ]
   },
@@ -54,11 +60,6 @@ let routes = [
         path: 'sub1',
         component: sub11,
         name: '子菜單一'
-      },
-      {
-        path: 'sub2',
-        component: sub12,
-        name: '子菜單二'
       }
     ]
   },
