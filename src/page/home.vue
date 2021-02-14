@@ -21,25 +21,28 @@
                     </el-dropdown-menu>
                 </el-dropdown>
             </el-col>
+
             <el-col :span="3" class="company">
-              <el-select size="mini" v-model="value" placeholder="请选择分区">
+              <el-select size="mini" v-model="wareId" placeholder="请选择仓库">
                 <el-option
-                  v-for="item in options"
-                  :key="item.value"
-                  :label="item.label"
-                  :value="item.value"
+                  v-for="item in wareList"
+                  :key="item.id"
+                  :label="item.name"
+                  :value="item.id"
                 ></el-option>
               </el-select>
+              <i class="el-icon-plus" @click="addWare"></i>
             </el-col>
             <el-col :span="3" class="company">
-              <el-select size="mini" v-model="value" placeholder="请选择分区">
+              <el-select size="mini" v-model="companyId" placeholder="请选择公司">
                 <el-option
-                  v-for="item in options"
-                  :key="item.value"
-                  :label="item.label"
-                  :value="item.value"
+                  v-for="item in companyList"
+                  :key="item.id"
+                  :label="item.name"
+                  :value="item.id"
                 ></el-option>
               </el-select>
+              <i class="el-icon-plus"></i>
             </el-col>
         </el-col>
     <el-col :span="24" class="main">
@@ -78,6 +81,7 @@
      </section>
    </el-col>
  </el-row>
+  <addWareDialog ref="addWareDialog"></addWareDialog>
 </div>
 </template>
 
@@ -85,33 +89,17 @@
 import { mapGetters } from "vuex";
 import { mapMutations } from "vuex";
 import * as types from "../store/mutation-types";
+import {getWareHousesList} from '../api/wareConfig'
+import addWareDialog from './compoent/addWareDialog'
+
 export default {
-  components: {},
+  components: {addWareDialog},
   data() {
     return {
-      options: [
-        {
-          value: "选项1",
-          label: "黄金糕"
-        },
-        {
-          value: "选项2",
-          label: "双皮奶"
-        },
-        {
-          value: "选项3",
-          label: "蚵仔煎"
-        },
-        {
-          value: "选项4",
-          label: "龙须面"
-        },
-        {
-          value: "选项5",
-          label: "北京烤鸭"
-        }
-      ],
-      value: "",
+      wareList:[],
+      companyList:[],
+      companyId: "",
+      wareId: "",
       sysName: "管理系统",
       sysUserName: "",
       activepath: "",
@@ -125,6 +113,11 @@ export default {
     }
   },
   methods: {
+    //添加仓库
+    addWare(){
+      this.$refs.addWareDialog.title = "添加"
+      this.$refs.addWareDialog.dialogVisible = true
+    },
     //退出登录
     logoutFun: function() {
       var _this = this;
@@ -207,6 +200,19 @@ export default {
     ...mapGetters(["username", "password", "treeData"])
   },
   mounted() {
+    let parm = {
+      pageNum:1,
+      pageSize:10000,
+      paging:false,
+    }
+    getWareHousesList(parm).then(res =>{
+      this.wareList =  [...res.data.data]
+      console.log(res)
+    })
+    getCompanyList(parm).then(res =>{
+      this.companyList =  [...res.data.data]
+      console.log(res)
+    })
     var user = sessionStorage.getItem("user");
     if (user) {
       user = JSON.parse(user);
