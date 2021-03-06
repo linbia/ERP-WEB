@@ -39,14 +39,15 @@ axios.interceptors.response.use(
 )
 
 export function fetch(requestUrl, params = '', type ='get') {
+
+  Cookies.set('wareId', localStorage.getItem('wareId'))
+  Cookies.set('companyId', localStorage.getItem('companyId'))
   // const token = Cookies.get('token') === undefined ? '11111' : Cookies.get('token')
   const token = localStorage.getItem('token') === null ? '' : localStorage.getItem('token')
   return axios({
     url: requestUrl,
     method: type,
-    data: {
-      'body': params
-    },
+    data: params,
     headers: {
       'Content-Type': 'application/json;charset=UTF-8',
       'Authorization': token

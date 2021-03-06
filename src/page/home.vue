@@ -31,7 +31,7 @@
                   :value="item.id"
                 ></el-option>
               </el-select>
-              <i class="el-icon-plus" @click="addWare"></i>
+              <i class="el-icon-plus" @click="addAction('ware')"></i>
             </el-col>
             <el-col :span="3" class="company">
               <el-select size="mini" v-model="companyId" placeholder="请选择公司">
@@ -42,7 +42,7 @@
                   :value="item.id"
                 ></el-option>
               </el-select>
-              <i class="el-icon-plus"></i>
+              <i class="el-icon-plus" @click="addAction('company')"></i>
             </el-col>
         </el-col>
     <el-col :span="24" class="main">
@@ -81,7 +81,7 @@
      </section>
    </el-col>
  </el-row>
-  <addWareDialog ref="addWareDialog"></addWareDialog>
+  <addWareDialog ref="addWareDialog" @getWareList="getWareList" @getCompanyList="getCompanyList" :title="title" :type="type"></addWareDialog>
 </div>
 </template>
 
@@ -90,6 +90,7 @@ import { mapGetters } from "vuex";
 import { mapMutations } from "vuex";
 import * as types from "../store/mutation-types";
 import {getWareHousesList} from '../api/wareConfig'
+import {getCompanyList} from '../api/company'
 import addWareDialog from './compoent/addWareDialog'
 
 export default {
@@ -104,19 +105,56 @@ export default {
       sysUserName: "",
       activepath: "",
       arry: [],
-      treeArry: []
+      treeArry: [],
+      parm : {
+        pageNum:1,
+        pageSize:10000,
+        paging:false,
+      },
+      title:'',
+      type:'',
     };
   },
   watch: {
     $route(to, from) {
       this.activepath = to.path;
-    }
+    },
+    wareId(newdata, olddata){
+      if (newdata) {
+        localStorage.setItem('wareId', newdata)
+      }
+    },
+    companyId(newdata, olddata){
+      if (newdata) {
+        localStorage.setItem('companyId', newdata)
+      }
+    },
   },
   methods: {
     //添加仓库
-    addWare(){
-      this.$refs.addWareDialog.title = "添加"
+    addAction(type){
+      if (type === 'ware') {
+        this.title = "添加仓库"
+        this.type = "ware"
+      }else {
+        this.title = "添加公司"
+        this.type = "company"
+      }
       this.$refs.addWareDialog.dialogVisible = true
+    },
+    //获取仓库列表
+    getWareList() {
+      getWareHousesList(this.parm).then(res =>{
+        this.wareList =  [...res.data.data]
+        this.wareId =  this.wareList[0].id
+      })
+    },
+    //获取公司列表
+    getCompanyList() {
+      getCompanyList(this.parm).then(res =>{
+        this.companyList =  [...res.data.data]
+        this.companyId =  this.companyList[0].id
+      })
     },
     //退出登录
     logoutFun: function() {
@@ -200,19 +238,8 @@ export default {
     ...mapGetters(["username", "password", "treeData"])
   },
   mounted() {
-    let parm = {
-      pageNum:1,
-      pageSize:10000,
-      paging:false,
-    }
-    getWareHousesList(parm).then(res =>{
-      this.wareList =  [...res.data.data]
-      console.log(res)
-    })
-    getCompanyList(parm).then(res =>{
-      this.companyList =  [...res.data.data]
-      console.log(res)
-    })
+    this.getWareList()
+    this.getCompanyList()
     var user = sessionStorage.getItem("user");
     if (user) {
       user = JSON.parse(user);

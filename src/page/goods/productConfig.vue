@@ -35,7 +35,7 @@
              </el-col>
            </el-col>-->
           <el-col :span="5" class="input-label">
-            <el-col :span="6" class="label">分区名称：</el-col>
+            <el-col :span="6" class="label">规格名称：</el-col>
             <el-col :span="16">
               <el-select size="mini" v-model="value" placeholder="请选择分区">
                 <el-option
@@ -48,7 +48,7 @@
             </el-col>
           </el-col>
           <el-col :span="5" class="input-label">
-            <el-col :span="6" class="label">货架：</el-col>
+            <el-col :span="6" class="label">分类：</el-col>
             <el-col :span="16">
               <el-select size="mini" v-model="value" placeholder="请选择货架">
                 <el-option
@@ -60,7 +60,7 @@
               </el-select>
             </el-col>
           </el-col>
-          <el-col :span="5" class="input-label">
+          <!--<el-col :span="5" class="input-label">
             <el-col :span="6" class="label">货位：</el-col>
             <el-col :span="16">
               <el-select size="mini" v-model="value" placeholder="请选择货位">
@@ -72,7 +72,7 @@
                 ></el-option>
               </el-select>
             </el-col>
-          </el-col>
+          </el-col>-->
         </el-row>
         <el-row class="input-box" :gutter="20">
           <el-col :span="6" class="input-label">
@@ -143,11 +143,11 @@
           size="mini"
           border
         >
-          <el-table-column prop="date" label="公司名称" width="180"></el-table-column>
-          <el-table-column prop="name" label="仓库" width="180"></el-table-column>
-          <el-table-column prop="address" label="分区名称"></el-table-column>
-          <el-table-column prop="address" label="货架"></el-table-column>
-          <el-table-column prop="address" label="货位"></el-table-column>
+          <el-table-column prop="companyId" label="公司名称" width="180"></el-table-column>
+          <el-table-column prop="image" label="图片" width="180"></el-table-column>
+          <el-table-column prop="name" label="商品名称"></el-table-column>
+          <el-table-column prop="description" label="描述"></el-table-column>
+          <el-table-column prop="status" label="状态"></el-table-column>
           <el-table-column
             fixed="right"
             label="操作"
@@ -170,6 +170,7 @@
   </div>
 </template>
 <script>
+  import {getProducts} from '../../api/goods'
   import pagination from "common/pagination";
   export default {
     data() {
@@ -180,28 +181,7 @@
           label: 'label'
         },
         totalPage: 300,
-        tableData: [
-          {
-            date: "2016-05-02",
-            name: "王小虎",
-            address: "上海市普陀区金沙江路 1518 弄"
-          },
-          {
-            date: "2016-05-04",
-            name: "王小虎",
-            address: "上海市普陀区金沙江路 1517 弄"
-          },
-          {
-            date: "2016-05-01",
-            name: "王小虎",
-            address: "上海市普陀区金沙江路 1519 弄"
-          },
-          {
-            date: "2016-05-03",
-            name: "王小虎",
-            address: "上海市普陀区金沙江路 1516 弄"
-          }
-        ],
+        tableData: [],
         options: [
           {
             value: "选项1",
@@ -230,6 +210,12 @@
       };
     },
     methods: {
+      //查询产品规格
+      getProductsList() {
+        getProducts().then(res =>{
+          this.tableData =  [...res.data.data]
+        })
+      },
       receivePageSize(val) {
         console.log(val);
       },
@@ -258,6 +244,9 @@
     },
     components: {
       pagination
+    },
+    mounted(){
+      this.getProductsList()
     }
   };
 </script>

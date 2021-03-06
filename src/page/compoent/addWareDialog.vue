@@ -4,77 +4,74 @@
     :visible.sync="dialogVisible"
     width="30%">
     <el-form :model="form" label-position="right" >
-      <el-form-item label="仓库名称" :label-width="formLabelWidth">
+      <el-form-item :label="type === 'ware' ? '仓库名称': '公司名称'" :label-width="formLabelWidth">
         <el-input v-model="form.name" autocomplete="off"></el-input>
       </el-form-item>
-
       <el-form-item label="城市" :label-width="formLabelWidth">
         <el-cascader
-          v-model="value"
-          :options="options"
-          @change="handleChange"></el-cascader>
-      </el-form-item>
-      <el-form-item label="区域" :label-width="formLabelWidth">
-        <el-select v-model="form.region" placeholder="请选择活动区域">
-          <el-option label="区域一" value="shanghai"></el-option>
-          <el-option label="区域二" value="beijing"></el-option>
-        </el-select>
+          v-model="cityValue"
+          :options="cityList"
+          ></el-cascader>
       </el-form-item>
       <el-form-item label="地址" :label-width="formLabelWidth">
         <el-input v-model="form.address" autocomplete="off"></el-input>
       </el-form-item>
       <el-form-item label="描述" :label-width="formLabelWidth">
-        <el-input v-model="form.address" autocomplete="off"></el-input>
+        <el-input v-model="form.description" autocomplete="off"></el-input>
       </el-form-item>
     </el-form>
     <div slot="footer" class="dialog-footer">
       <el-button @click="dialogVisible = false">取 消</el-button>
-      <el-button type="primary" @click="dialogVisible = false">确 定</el-button>
+      <el-button type="primary" @click="addButton">确 定</el-button>
     </div>
   </el-dialog>
 </template>
 
 <script>
+  import {addWareHousesList} from '../../api/wareConfig'
+  import {addCompanyList} from '../../api/company'
+  import cityList from '../../../static/json/city'
     export default {
         name: "addWareDialog",
         props:{
-          title:''
+          title:'',
+          type:''
         },
         data() {
           return {
             dialogVisible: false,
-            options:[],
-            gridData: [{
-              date: '2016-05-02',
-              name: '王小虎',
-              address: '上海市普陀区金沙江路 1518 弄'
-            }, {
-              date: '2016-05-04',
-              name: '王小虎',
-              address: '上海市普陀区金沙江路 1518 弄'
-            }, {
-              date: '2016-05-01',
-              name: '王小虎',
-              address: '上海市普陀区金沙江路 1518 弄'
-            }, {
-              date: '2016-05-03',
-              name: '王小虎',
-              address: '上海市普陀区金沙江路 1518 弄'
-            }],
-            form: {
-              name: '',
-              region: '',
-              date1: '',
-              date2: '',
-              delivery: false,
-              type: [],
-              resource: '',
-              desc: ''
-            },
+            cityValue:'',
+            cityList:cityList.city,
+            form: {},
             formLabelWidth: '80px'
           };
           },
         methods: {
+          //添加仓库
+          addButton(){
+            console.log(this.cityValue)
+            console.log(this.form)
+            let param =  {
+                ...this.form,
+                "type": "",
+                "area": this.cityValue[2],
+                "city": this.cityValue[1],
+                "province": this.cityValue[0],
+            }
+            if (this.type === 'ware') {
+              param.companyId = 0
+              addWareHousesList({ warehouse:param}).then(res =>{
+                this.dialogVisible =  false
+                this.$emit('getWareList')
+              })
+            } else {
+              param.adminId = 1
+              addCompanyList({ company:param}).then(res =>{
+                this.dialogVisible =  false
+                this.$emit('getCompanyList')
+              })
+            }
+          },
         }
     }
 </script>

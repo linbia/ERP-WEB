@@ -9,6 +9,11 @@ import notFound from '../page/404.vue'
 import warehouseList from '../page/warehouse/index.vue'
 import wareOrder from '../page/warehouse/wareOrder'
 import wareConfig from '../page/warehouse/wareConfig'
+
+import productConfig from '../page/goods/productConfig'
+import typeConfig from '../page/goods/typeConfig'
+import specificationsConfig from '../page/goods/specificationsConfig'
+
 import sub11 from '../page/menu1/sub1.vue'
 import sub12 from '../page/menu1/sub2.vue'
 import sub21 from '../page/menu2/sub1.vue'
@@ -34,19 +39,6 @@ let routes = [
     hidden: true
   },
   {
-    path: '/menu1',
-    component: home,
-    name: '公司管理',
-    iconCls: 'el-icon-message', //图标样式class
-    children: [
-      {
-        path: 'sub1',
-        component: sub11,
-        name: '公司管理'
-      }
-    ]
-  },
-  {
     path: '/warehouse',
     component: home,
     name: '仓库管理',
@@ -69,6 +61,88 @@ let routes = [
       }
     ]
   },
+  {
+    path: '/goods',
+    component: home,
+    name: '商品管理',
+    iconCls: 'el-icon-message', //图标样式class
+    children: [
+      {
+        path: 'product',
+        component: productConfig,
+        name: '产品管理'
+      },
+      {
+        path: 'type',
+        component: typeConfig,
+        name: '分类管理'
+      },
+      {
+        path: 'specifications',
+        component: specificationsConfig,
+        name: '规格管理'
+      },
+      {
+        path: 'spu',
+        component: sub11,
+        name: 'SPU管理'
+      }
+    ]
+  },
+  {
+    path: '/supplier',
+    component: home,
+    name: '供应商管理',
+    iconCls: 'el-icon-message', //图标样式class
+    children: [
+      {
+        path: 'supplier',
+        component: sub11,
+        name: '供应商管理'
+      },
+      {
+        path: 'customer',
+        component: sub11,
+        name: '客户管理'
+      }
+    ]
+  },
+  {
+    path: '/user',
+    component: home,
+    name: '账号管理',
+    iconCls: 'el-icon-message', //图标样式class
+    children: [
+      {
+        path: 'employees',
+        component: sub11,
+        name: '角色管理'
+      },
+      {
+        path: 'person',
+        component: sub11,
+        name: '用户管理'
+      }
+    ]
+  },
+ /* {
+    path: '/permissions',
+    component: home,
+    name: '权限管理',
+    iconCls: 'el-icon-message', //图标样式class
+    children: [
+      {
+        path: 'employees',
+        component: sub11,
+        name: '员工管理'
+      },
+      {
+        path: 'person',
+        component: sub11,
+        name: '人员管理'
+      }
+    ]
+  },*/
   /*{
     path: '/menu1',
     component: home,
