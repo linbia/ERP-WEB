@@ -1,50 +1,61 @@
-
 <template>
   <div class="container-box">
     <div class="container-right">
       <div class="form-box">
-
         <el-row class="input-box" :gutter="20">
           <el-col :span="6" class="input-label">
-            <el-button type="primary" icon="el-icon-plus" size="mini" @click="addAction" >新增</el-button>
+            <el-button type="primary" icon="el-icon-plus" size="mini" @click="addAction">新增</el-button>
             <el-button type="primary" icon="el-icon-delete" size="mini" >删除</el-button>
           </el-col>
         </el-row>
       </div>
       <div class="table-box">
-        <el-card class="box-card" v-for="item in tableData" :key="item.id">
-          <div slot="header" class="clearfix">
-            <span>{{item.name}}</span>
-            <el-button style="float: right; padding: 3px 0" type="text">编辑</el-button>
-            <el-button style="float: right; padding: 3px 0" type="text">删除</el-button>
-          </div>
-          <div v-if="item.productSpecList">
-            <el-checkbox :label="li.value" v-model="li.status ? true : false" border class="magin-5" v-for="li in item.productSpecList" :key="li.id">
-             <!-- <template>
-                <el-input :value="o"></el-input>
-              </template>-->
-            </el-checkbox>
-          </div>
-        <!--  <div v-for="o in 10" :key="o" class="text item">
-            {{'列表内容 ' + o }}
-          </div>-->
-        </el-card>
-        <!--<el-table
+        <el-table
           class="table-box-content"
           :data="tableData"
           size="mini"
           border
         >
-          <el-table-column prop="identifier" label="公司" width="180"></el-table-column>
-          <el-table-column prop="name" label="规格组" ></el-table-column>
-          <el-table-column prop="description" label="规格组描述"></el-table-column>
+          <el-table-column label="客户类型" width="180">
+            <template slot-scope="scope">
+              <span> {{scope.row.category ? "个人" : '公司'}}</span>
+            </template>
+          </el-table-column>
+          <el-table-column prop="name" label="名称" ></el-table-column>
+          <el-table-column prop="phone" label="手机号"></el-table-column>
+          <el-table-column label="地址">
+            <template slot-scope="scope">
+              <span> {{scope.row.province + scope.row.city + scope.row.area + scope.row.address}}</span>
+            </template>
+          </el-table-column>
           <el-table-column
             fixed="right"
             label="操作"
             width="150">
             <template slot-scope="scope">
               <el-button @click="handleClick(scope.row)" type="text" size="small" icon="el-icon-edit">编辑</el-button>
-              <el-button type="text" size="small" icon="el-icon-delete">删除</el-button>
+              <el-popconfirm
+                confirm-button-text='确定'
+                cancel-button-text='取消'
+                icon="el-icon-info"
+                @confirm="deleteSuppiler(scope.row)"
+                icon-color="red"
+                title="确定删除该供应商吗？"
+              >
+                <el-button slot="reference" type="text" size="small" icon="el-icon-delete">删除</el-button>
+              </el-popconfirm>
+             <!-- <el-popover
+                placement="top"
+                trigger="click"
+                width="160"
+                v-model="visible">
+                <p>确定删除吗？</p>
+                <div style="text-align: right; margin: 0">
+                  <el-button size="mini" type="text" @click="visible = false">取消</el-button>
+                  <el-button type="primary" size="mini" @click="deleteSuppiler(scope.row)">确定</el-button>
+                </div>
+                <el-button slot="reference" type="text" size="small" icon="el-icon-delete">删除</el-button>
+              </el-popover>-->
             </template>
           </el-table-column>
         </el-table>
@@ -53,74 +64,67 @@
           @sendPageSize="receivePageSize"
           @sendCurrentPage="receiveCurrentPage"
           :totalPage="totalPage"
-        ></pagination>-->
+        ></pagination>
       </div>
-      <goods-dialog ref="goodsDialog" :title="title" :type="type" @getSpecsGroupsList="getSpecsGroupsList"></goods-dialog>
     </div>
-
+    <suppiler-dialog ref="suppilerDialog" :title="title" :type="type" @getSupplierList="getSupplierList" ></suppiler-dialog>
   </div>
 </template>
 <script>
-  import {getSpecsGroups} from '../../api/goods'
-  import GoodsDialog from "../compoent/goodsDialog";
+  import {getSupplyList, deleteSupplyList} from '../../api/supplier'
+  import suppilerDialog from "../compoent/suppilerDialog";
   import pagination from "common/pagination";
   export default {
     data() {
       return {
+        visible: false,
         filterText: '',
         defaultProps: {
           children: 'children',
           label: 'label'
         },
-        title: '',
+        totalPage: 30,
+        pageNum: 1,
+        pageSize: 20,
         type: '',
-        totalPage: 300,
+        title: '',
         tableData:[],
-        checkList:[],
-        options: [
-          {
-            value: "选项1",
-            label: "黄金糕"
-          },
-          {
-            value: "选项2",
-            label: "双皮奶"
-          },
-          {
-            value: "选项3",
-            label: "蚵仔煎"
-          },
-          {
-            value: "选项4",
-            label: "龙须面"
-          },
-          {
-            value: "选项5",
-            label: "北京烤鸭"
-          }
-        ],
         value: "",
         input2: "",
         DateValue: ""
       };
     },
     methods: {
-      //查询产品规格
-      getSpecsGroupsList() {
-        getSpecsGroups().then(res =>{
+      //查询供应商
+      getSupplierList() {
+        let param = {
+          pageNum : this.pageNum,
+          pageSize : this.pageSize,
+          paging : true,
+        }
+        getSupplyList(param).then(res =>{
           this.tableData =  [...res.data.data]
+          this.totalPage = res.data.totalCount
         })
       },
       //新增
       addAction() {
-        this.title = "添加规格"
-        this.type = "specifcation"
-        this.$refs.goodsDialog.dialogVisible = true
+        this.title = "添加供应商"
+        this.type = "supplier"
+        this.$refs.suppilerDialog.dialogVisible = true
+      },
+      //删除
+      deleteSuppiler(row){
+        deleteSupplyList(row.id).then(res =>{
+          this.getSupplierList()
+        })
       },
       receivePageSize(val) {
+        this.pageNum = val
         console.log(val);
       },
       receiveCurrentPage(val) {
+        this.pageSize = val
         console.log(val);
       },
       // 修改table header的背景色
@@ -144,11 +148,11 @@
       }
     },
     components: {
-      GoodsDialog,
+      suppilerDialog,
       pagination
     },
     mounted(){
-      this.getSpecsGroupsList()
+      this.getSupplierList()
     }
   };
 </script>
@@ -186,36 +190,6 @@
         height: calc(100% - 80px);
         overflow: auto;
         padding: 10px;
-        display: flex;
-        flex-wrap: wrap;
-        .text {
-          font-size: 14px;
-          .magin-5{
-            margin: 5px;
-          }
-        }
-
-        .item {
-          margin-bottom: 18px;
-        }
-
-        .clearfix:before,
-        .clearfix:after {
-          display: table;
-          content: "";
-        }
-        .clearfix:after {
-          clear: both
-        }
-
-        .box-card {
-          width: 413px;
-          height: 300px;
-          margin: 0px 10px 10px 0px;
-        }
-
-
-
         .table-box-content{
           height: calc(100% - 45px);
         }

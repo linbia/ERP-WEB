@@ -5,7 +5,7 @@ import {fetch, fetchapi, baseUrl} from 'config/index.js'
  * @returns {*}
  */
 export function getWareHousesList(params) {
-  return fetch(`${baseUrl}/warehouse-management/warehouses?pageNum=${params.pageNum}&pageSize=${params.pageSize}&paging=${params.paging}`, params)
+  return fetch(`${baseUrl}/warehouse-management/warehouses?paging=${params.paging}`, params)
 }
 /**
  * 获取仓库分区列表

@@ -23,7 +23,7 @@
             </el-col>
 
             <el-col :span="3" class="company">
-              <el-select size="mini" v-model="wareId" placeholder="请选择仓库">
+              <el-select size="mini" v-model="wareId" placeholder="请选择仓库" @change="changeWare">
                 <el-option
                   v-for="item in wareList"
                   :key="item.id"
@@ -34,7 +34,7 @@
               <i class="el-icon-plus" @click="addAction('ware')"></i>
             </el-col>
             <el-col :span="3" class="company">
-              <el-select size="mini" v-model="companyId" placeholder="请选择公司">
+              <el-select size="mini" v-model="companyId" placeholder="请选择公司" @change="getWareList">
                 <el-option
                   v-for="item in companyList"
                   :key="item.id"
@@ -92,6 +92,7 @@ import * as types from "../store/mutation-types";
 import {getWareHousesList} from '../api/wareConfig'
 import {getCompanyList} from '../api/company'
 import addWareDialog from './compoent/addWareDialog'
+import Cookies from 'js-cookie'
 
 export default {
   components: {addWareDialog},
@@ -121,7 +122,7 @@ export default {
     },
     wareId(newdata, olddata){
       if (newdata) {
-        localStorage.setItem('wareId', newdata)
+        localStorage.setItem('warehouseId', newdata)
       }
     },
     companyId(newdata, olddata){
@@ -142,18 +143,36 @@ export default {
       }
       this.$refs.addWareDialog.dialogVisible = true
     },
+    async init(){
+      await this.getCompanyList('init')
+    },
+    changeWare(value) {
+      localStorage.setItem('warehouseId', value)
+    },
     //获取仓库列表
     getWareList() {
+      localStorage.setItem('companyId', this.companyId)
       getWareHousesList(this.parm).then(res =>{
-        this.wareList =  [...res.data.data]
-        this.wareId =  this.wareList[0].id
+        if (res.data.data) {
+          this.wareList =  [...res.data.data]
+          this.wareId =  this.wareList[0].id
+        }else {
+          this.wareList = []
+          this.wareId = ''
+          this.$message.error("当前公司未创建仓库，请先创建仓库!");
+        }
+
       })
     },
     //获取公司列表
-    getCompanyList() {
+    getCompanyList(type) {
       getCompanyList(this.parm).then(res =>{
         this.companyList =  [...res.data.data]
-        this.companyId =  this.companyList[0].id
+        if (type === 'init') {
+          this.companyId =  this.companyList[0].id
+        }
+        localStorage.setItem('companyId', this.companyId)
+        this.getWareList()
       })
     },
     //退出登录
@@ -163,7 +182,8 @@ export default {
         //type: 'warning'
       })
         .then(() => {
-          sessionStorage.removeItem("user");
+          localStorage.removeItem('token');
+          localStorage.removeItem('userName')
           _this.$router.push("/login");
         })
         .catch(() => {});
@@ -182,7 +202,7 @@ export default {
         this.arry.push(obj);
       }
       add = true;
-      sessionStorage.setItem("tabData", JSON.stringify(this.arry));
+      localStorage.setItem("tabData", JSON.stringify(this.arry));
     },
     // 操作tab
     changeRouter(index) {
@@ -210,7 +230,7 @@ export default {
       } else {
         this.$router.push(this.arry[index - 1].path);
       }
-      sessionStorage.setItem("tabData", JSON.stringify(this.arry));
+      localStorage.setItem("tabData", JSON.stringify(this.arry));
     },
     ...mapMutations({
       setTabData: types.SET_TABDATA
@@ -218,8 +238,8 @@ export default {
   },
   created() {
     this.checkTreeNode(this.treeData);
-    if (JSON.parse(sessionStorage.getItem("tabData"))) {
-      this.arry = JSON.parse(sessionStorage.getItem("tabData"));
+    if (JSON.parse(localStorage.getItem("tabData"))) {
+      this.arry = JSON.parse(localStorage.getItem("tabData"));
       this.activepath = this.$route.path;
     } else {
       let obj = {};
@@ -238,12 +258,10 @@ export default {
     ...mapGetters(["username", "password", "treeData"])
   },
   mounted() {
-    this.getWareList()
-    this.getCompanyList()
-    var user = sessionStorage.getItem("user");
-    if (user) {
-      user = JSON.parse(user);
-      this.sysUserName = user.userName || "";
+    this.init()
+    var userName = localStorage.getItem("userName");
+    if (userName) {
+      this.sysUserName = userName || "";
     }
   }
 };

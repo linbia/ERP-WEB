@@ -1,22 +1,5 @@
 <template>
   <div class="container-box">
-    <!--<div class="container-left">
-      <el-input
-        size="mini"
-        placeholder="输入关键字进行过滤"
-        v-model="filterText">
-      </el-input>
-
-      <el-tree
-        class="filter-tree"
-        :data="data"
-        :props="defaultProps"
-        default-expand-all
-        :filter-node-method="filterNode"
-        ref="tree">
-      </el-tree>
-
-    </div>-->
     <div class="container-right">
       <div class="form-box">
 
@@ -76,7 +59,7 @@
         </el-row>
         <el-row class="input-box" :gutter="20">
           <el-col :span="6" class="input-label">
-            <el-button type="primary" icon="el-icon-plus" size="mini" >新增</el-button>
+            <el-button type="primary" icon="el-icon-plus" size="mini" @click="addAction">新增</el-button>
             <el-button type="primary" icon="el-icon-delete" size="mini" >删除</el-button>
           </el-col>
           <!--<el-col :span="6" class="input-label">
@@ -166,12 +149,13 @@
         ></pagination>
       </div>
     </div>
-
+    <goods-dialog ref="goodsDialog" :title="title" :type="type" ></goods-dialog>
   </div>
 </template>
 <script>
   import {getProducts} from '../../api/goods'
   import pagination from "common/pagination";
+  import GoodsDialog from "../compoent/goodsDialog";
   export default {
     data() {
       return {
@@ -180,30 +164,10 @@
           children: 'children',
           label: 'label'
         },
+        title: '',
+        type: '',
         totalPage: 300,
         tableData: [],
-        options: [
-          {
-            value: "选项1",
-            label: "黄金糕"
-          },
-          {
-            value: "选项2",
-            label: "双皮奶"
-          },
-          {
-            value: "选项3",
-            label: "蚵仔煎"
-          },
-          {
-            value: "选项4",
-            label: "龙须面"
-          },
-          {
-            value: "选项5",
-            label: "北京烤鸭"
-          }
-        ],
         value: "",
         input2: "",
         DateValue: ""
@@ -214,7 +178,14 @@
       getProductsList() {
         getProducts().then(res =>{
           this.tableData =  [...res.data.data]
+          this.totalPage = res.data.totalCount
         })
+      },
+      //新增
+      addAction() {
+        this.title = "添加产品"
+        this.type = "product"
+        this.$refs.goodsDialog.dialogVisible = true
       },
       receivePageSize(val) {
         console.log(val);
@@ -243,6 +214,7 @@
       }
     },
     components: {
+      GoodsDialog,
       pagination
     },
     mounted(){
@@ -281,8 +253,8 @@
         }
       }
       .table-box{
-        height: calc(100% - 145px);
-        padding: 20px;
+        height: calc(100% - 130px);
+        padding: 10px;
         .table-box-content{
           height: calc(100% - 30px);
         }

@@ -6,7 +6,7 @@ export const ERR_OK = 8200
 export const TIME_QUERY = 500
 
 export const imageCDN = process.env.IMAGE_CDN
-export const baseUrl = '/api'
+export const baseUrl = '/manage'
 export const baseImgUrl = process.env.BASE_URL
 
 // 请求超时时间
@@ -21,11 +21,10 @@ axios.interceptors.response.use(
      */
     let {data} = response
     console.log(data.message)
-    if (data.message === 'token failure!') {
+    if (data.status === 401) {
       localStorage.removeItem('token')
-      localStorage.removeItem('UserName')
-      localStorage.removeItem('Password')
-      localStorage.removeItem('token')
+      localStorage.removeItem('userName')
+      localStorage.removeItem('password')
       window.location.href = '#/'
     } else {
       return Promise.resolve(response)
@@ -39,18 +38,26 @@ axios.interceptors.response.use(
 )
 
 export function fetch(requestUrl, params = '', type ='get') {
-
-  Cookies.set('wareId', localStorage.getItem('wareId'))
-  Cookies.set('companyId', localStorage.getItem('companyId'))
-  // const token = Cookies.get('token') === undefined ? '11111' : Cookies.get('token')
   const token = localStorage.getItem('token') === null ? '' : localStorage.getItem('token')
+  console.log(requestUrl)
+  if ((requestUrl === "/manage/login" || requestUrl === "/manage/company-management/companies?paging=false")) {//查询公司列表
+    Cookies.set('warehouseId', null)
+    Cookies.set('companyId', null)
+  }else if (requestUrl ===  "/manage/warehouse-management/warehouses?paging=false") {//查询仓库列表
+    Cookies.set('warehouseId', null)
+    localStorage.getItem('companyId') ? Cookies.set('companyId', localStorage.getItem('companyId')) : ''
+  }else {
+    localStorage.getItem('warehouseId') ? Cookies.set('warehouseId', localStorage.getItem('warehouseId')) :''
+    localStorage.getItem('companyId') ? Cookies.set('companyId', localStorage.getItem('companyId')) : ''
+  }
   return axios({
     url: requestUrl,
     method: type,
     data: params,
     headers: {
       'Content-Type': 'application/json;charset=UTF-8',
-      'Authorization': token
+      'Authorization': '',
+      'token':token,
     }
   })
 }

@@ -27,6 +27,7 @@
 
 <script>
 import { mapMutations } from "vuex";
+import { loginApi } from "../api/login";
 import * as commonApi from "api/common";
 import * as types from "../store/mutation-types";
 export default {
@@ -66,19 +67,30 @@ export default {
   },
   methods: {
     login() {
+      let self = this
       this.$refs.ruleForm2.validate(valid => {
         if (valid) {
           this.logining = true;
+          const params = {
+            userName: this.ruleForm2.account,
+            password: this.ruleForm2.checkPass
+          };
+          loginApi(params).then(res =>{
+            if (res.data.data && res.data.data.token) {
+              localStorage.setItem("userName", params.userName); // session存储用户信息
+              localStorage.setItem('token', res.data.data.token)
+              self.logining = false;
+             this.$router.push({ path: "/warehouse/warehouseList" });  // 去主页
+            }
+          })
           // 模拟登录
-          setTimeout(() => {
+          /*setTimeout(() => {
             const params = {
               userName: this.ruleForm2.account,
               password: this.ruleForm2.checkPass
             };
-            sessionStorage.setItem("user", JSON.stringify(params)); // session存储用户信息
-            this.logining = false;
-            this.$router.push({ path: "/warehouse/warehouseList" });  // 去主页
-          }, 1000);
+            self.$router.push({ path: "/warehouse/warehouseList" });  // 去主页
+          }, 1000);*/
           // const params = {
           //   userName: this.ruleForm2.account,
           //   password: this.ruleForm2.checkPass
@@ -90,8 +102,7 @@ export default {
           //       this.$router.push({ path: "/declare/ordermanage" });  // 去主页
           //       this.setTreeData(data.data); // 状态存储菜单节点
           //       this.setToken(data.value); // 状态存储token
-          //       sessionStorage.setItem("user", JSON.stringify(params)); // session存储用户信息
-          //       sessionStorage.setItem("token", data.value); // session存储token
+          //
           //       // 记住密码操作
           //       if (this.checked) {
           //         localStorage.setItem('userName', params.userName)

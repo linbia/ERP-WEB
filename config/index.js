@@ -11,12 +11,13 @@ module.exports = {
     assetsSubDirectory: 'static',
     assetsPublicPath: '/',
     proxyTable: {
-      '/api': {
-        target: 'http://suyj.fast2.fgnwctvip.com/',
+      '/manage': {
+        //target: 'http://suyj.fast2.fgnwctvip.com/manage',
+        target: 'http://119.45.238.250:10001/manage/',
       /*  target: 'http://127.0.0.1:10000/',*/
         changeOrigin: true,
         pathRewrite: {
-          '^/api': ''
+          '^/manage': ''
         }
       }
     },
@@ -44,7 +45,7 @@ module.exports = {
 
     cssSourceMap: true
   },
-
+  //scp dist.zip suyj@119.45.238.250:/home/suyj/react
   build: {
     // Template for index.html
     index: path.resolve(__dirname, '../dist/index.html'),

@@ -2,10 +2,9 @@
   <div class="container-box">
     <div class="container-right">
       <div class="form-box">
-
         <el-row class="input-box" :gutter="20">
           <el-col :span="6" class="input-label">
-            <el-button type="primary" icon="el-icon-plus" size="mini" >新增</el-button>
+            <el-button type="primary" icon="el-icon-plus" size="mini" @click="addAction">新增</el-button>
             <el-button type="primary" icon="el-icon-delete" size="mini" >删除</el-button>
           </el-col>
         </el-row>
@@ -30,20 +29,21 @@
             </template>
           </el-table-column>
         </el-table>
-       <!-- <pagination
+        <pagination
           class="table-box-footer"
           @sendPageSize="receivePageSize"
           @sendCurrentPage="receiveCurrentPage"
           :totalPage="totalPage"
-        ></pagination>-->
+        ></pagination>
       </div>
     </div>
-
+    <goods-dialog ref="goodsDialog" :title="title" :type="type" @getClassificationsList="getClassificationsList" ></goods-dialog>
   </div>
 </template>
 <script>
   import {getClassifications} from '../../api/goods'
-  //import pagination from "common/pagination";
+  import GoodsDialog from "../compoent/goodsDialog";
+  import pagination from "common/pagination";
   export default {
     data() {
       return {
@@ -53,29 +53,9 @@
           label: 'label'
         },
         totalPage: 300,
+        type: '',
+        title: '',
         tableData:[],
-        options: [
-          {
-            value: "选项1",
-            label: "黄金糕"
-          },
-          {
-            value: "选项2",
-            label: "双皮奶"
-          },
-          {
-            value: "选项3",
-            label: "蚵仔煎"
-          },
-          {
-            value: "选项4",
-            label: "龙须面"
-          },
-          {
-            value: "选项5",
-            label: "北京烤鸭"
-          }
-        ],
         value: "",
         input2: "",
         DateValue: ""
@@ -87,6 +67,12 @@
         getClassifications().then(res =>{
           this.tableData =  [...res.data.data]
         })
+      },
+      //新增
+      addAction() {
+        this.title = "添加分类"
+        this.type = "type"
+        this.$refs.goodsDialog.dialogVisible = true
       },
       receivePageSize(val) {
         console.log(val);
@@ -115,6 +101,8 @@
       }
     },
     components: {
+      GoodsDialog,
+      pagination
     },
     mounted(){
       this.getClassificationsList()
@@ -152,11 +140,11 @@
         }
       }
       .table-box{
-        height: calc(100% - 100px);
+        height: calc(100% - 70px);
         overflow: auto;
         padding: 10px;
         .table-box-content{
-          height: calc(100% - 30px);
+          height: calc(100% - 45px);
         }
         .table-box-footer{
           height: auto;

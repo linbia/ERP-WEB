@@ -22,10 +22,20 @@ Vue.config.productionTip = false
 /* eslint-disable no-new */
 router.beforeEach((to, from, next) => {
     if (to.path == '/login') {
-        sessionStorage.removeItem('user');
+      localStorage.removeItem('token');
+      localStorage.removeItem('warehouseId');
+      localStorage.removeItem('companyId');
+      var exp = new Date();
+      exp.setTime(exp.getTime() + -1 * 1000);
+      document.cookie = 'warehouseId' + '=' + '' + ';expires=' + exp.toGMTString();
+      document.cookie = 'companyId' + '=' + '' + ';expires=' + exp.toGMTString();
     }
-    let user = JSON.parse(sessionStorage.getItem('user'));
-    if (!user && to.path != '/login') {
+    let token = localStorage.getItem('token');
+    if (!token && to.path != '/login') {
+      var exp = new Date();
+      exp.setTime(exp.getTime() + -1 * 1000);
+      document.cookie = 'warehouseId' + '=' + '' + ';expires=' + exp.toGMTString();
+      document.cookie = 'companyId' + '=' + '' + ';expires=' + exp.toGMTString();
         next({
             path: '/login'
         });

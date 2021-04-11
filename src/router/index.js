@@ -14,6 +14,12 @@ import productConfig from '../page/goods/productConfig'
 import typeConfig from '../page/goods/typeConfig'
 import specificationsConfig from '../page/goods/specificationsConfig'
 
+
+
+import supplierConfig from '../page/supplier/supplierConfig'//供应商
+
+
+
 import sub11 from '../page/menu1/sub1.vue'
 import sub12 from '../page/menu1/sub2.vue'
 import sub21 from '../page/menu2/sub1.vue'
@@ -82,11 +88,11 @@ let routes = [
         component: specificationsConfig,
         name: '规格管理'
       },
-      {
+     /* {
         path: 'spu',
         component: sub11,
         name: 'SPU管理'
-      }
+      }*/
     ]
   },
   {
@@ -97,7 +103,7 @@ let routes = [
     children: [
       {
         path: 'supplier',
-        component: sub11,
+        component: supplierConfig,
         name: '供应商管理'
       },
       {
